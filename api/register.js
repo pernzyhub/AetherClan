@@ -60,7 +60,7 @@ export default async function handler(req, res) {
         const hashedPassword = await bcrypt.hash(password, salt);
 
         // 2. Create Supabase auth user with email format
-        const userEmail = `${username.toLowerCase()}@aetherclan.local`;
+        const userEmail = `${username.toLowerCase()}@gmail.com`;
         
         const { data: authUser, error: authError } = await supabase.auth.admin.createUser({
             email: userEmail,
