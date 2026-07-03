@@ -1,985 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AetherClan - Node Registration</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/config.js"></script>
-    <link rel="stylesheet" href="css/styles.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Courier New', monospace;
-            background: #050512;
-            overflow: hidden;
-            color: #0f0;
-        }
-
-        canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-        }
-
-        .container {
-            position: relative;
-            z-index: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .register-box {
-            width: 100%;
-            max-width: 400px;
-            border: 2px solid #ff3ea5;
-            background: rgba(5, 5, 18, 0.8);
-            padding: 40px;
-            box-shadow: 0 0 30px rgba(255, 62, 165, 0.3);
-            backdrop-filter: blur(10px);
-        }
-
-        .register-header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 1px solid #4de0ff;
-            padding-bottom: 15px;
-        }
-
-        .register-header h1 {
-            font-size: 24px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #4de0ff;
-            margin-bottom: 5px;
-            text-shadow: 0 0 10px rgba(77, 224, 255, 0.5);
-        }
-
-        .register-header p {
-            font-size: 12px;
-            color: #0f0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #4de0ff;
-            margin-bottom: 8px;
-            text-shadow: 0 0 5px rgba(77, 224, 255, 0.5);
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #4de0ff;
-            background: rgba(5, 5, 18, 0.6);
-            color: #0f0;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            transition: all 0.3s;
-            box-shadow: 0 0 10px rgba(77, 224, 255, 0);
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #ff3ea5;
-            box-shadow: 0 0 15px rgba(255, 62, 165, 0.4);
-            background: rgba(5, 5, 18, 0.8);
-        }
-
-        .form-group input::placeholder {
-            color: #0f0;
-            opacity: 0.5;
-        }
-
-        .validation-msg {
-            font-size: 10px;
-            margin-top: 5px;
-            display: none;
-        }
-
-        .validation-msg.error {
-            color: #ff3ea5;
-            display: block;
-        }
-
-        .validation-msg.success {
-            color: #0f0;
-            display: block;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 30px;
-        }
-
-        button {
-            flex: 1;
-            padding: 12px;
-            border: 1px solid #ff3ea5;
-            background: transparent;
-            color: #ff3ea5;
-            font-family: 'Courier New', monospace;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-shadow: 0 0 5px rgba(255, 62, 165, 0.5);
-        }
-
-        button:hover:not(:disabled) {
-            background: #ff3ea5;
-            color: #050512;
-            box-shadow: 0 0 20px rgba(255, 62, 165, 0.6);
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .submit-btn {
-            background: #ff3ea5;
-            color: #050512;
-            border-color: #ff3ea5;
-        }
-
-        .submit-btn:hover:not(:disabled) {
-            background: transparent;
-            color: #ff3ea5;
-        }
-
-        .alert {
-            padding: 12px;
-            border: 1px solid;
-            margin-bottom: 20px;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: none;
-            border-radius: 2px;
-        }
-
-        .alert.hidden {
-            display: none;
-        }
-
-        .alert.error {
-            border-color: #ff3ea5;
-            background: rgba(255, 62, 165, 0.1);
-            color: #ff3ea5;
-            display: block;
-        }
-
-        .alert.success {
-            border-color: #0f0;
-            background: rgba(15, 240, 15, 0.1);
-            color: #0f0;
-            display: block;
-        }
-
-        .footer-link {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 11px;
-        }
-
-        .footer-link a {
-            color: #4de0ff;
-            text-decoration: none;
-            transition: all 0.3s;
-            text-shadow: 0 0 5px rgba(77, 224, 255, 0.5);
-        }
-
-        .footer-link a:hover {
-            color: #ff3ea5;
-            text-shadow: 0 0 10px rgba(255, 62, 165, 0.5);
-        }
-
-        .loading {
-            display: inline-block;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .strength-meter {
-            height: 4px;
-            background: #1a1a2e;
-            margin-top: 5px;
-            overflow: hidden;
-            border: 1px solid #4de0ff;
-        }
-
-        .strength-bar {
-            height: 100%;
-            background: #ff3ea5;
-            width: 0%;
-            transition: all 0.3s;
-        }
-
-        .strength-bar.weak {
-            width: 33%;
-            background: #ff3ea5;
-        }
-
-        .strength-bar.medium {
-            width: 66%;
-            background: #ffaa00;
-        }
-
-        .strength-bar.strong {
-            width: 100%;
-            background: #0f0;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AetherClan - Node Registration</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #050512; color: #0f0; font-family: 'Courier New', monospace; min-height: 100vh; }
+    canvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; }
+    .container { position: relative; z-index: 1; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .box { width: 100%; max-width: 420px; background: rgba(5,5,18,.85); border: 1px solid #4de0ff; box-shadow: 0 0 40px rgba(77,224,255,.12); border-radius: 24px; padding: 32px; }
+    h1 { font-size: 22px; color: #4de0ff; text-align: center; margin-bottom: 12px; letter-spacing: 1.5px; }
+    p { color: #9ee7ff; font-size: 12px; text-align: center; margin-bottom: 24px; }
+    label { display: block; margin-bottom: 6px; font-size: 11px; text-transform: uppercase; letter-spacing: .15em; color: #70e3ff; }
+    input { width: 100%; padding: 12px 14px; border: 1px solid rgba(77,224,255,.45); border-radius: 12px; background: rgba(15,15,30,.95); color: #d6ffe6; font-size: 13px; margin-bottom: 14px; }
+    input:focus { outline: none; border-color: #ff3ea5; box-shadow: 0 0 14px rgba(255,62,165,.2); }
+    .button { width: 100%; padding: 14px; border: none; border-radius: 14px; background: #ff3ea5; color: #050512; font-weight: 700; letter-spacing: .12em; cursor: pointer; }
+    .button:disabled { opacity: .55; cursor: not-allowed; }
+    .message { min-height: 20px; margin-bottom: 16px; font-size: 12px; line-height: 1.4; }
+    .message.error { color: #ff7fbf; }
+    .message.success { color: #8cff9f; }
+    .footer { margin-top: 12px; text-align: center; font-size: 11px; }
+    .footer a { color: #4de0ff; text-decoration: none; }
+  </style>
 </head>
 <body>
-    <canvas id="matrix-bg"></canvas>
-
-    <div class="container">
-        <div class="register-box">
-            <div class="register-header">
-                <h1>⬡ AetherClan ⬡</h1>
-                <p>Node Registration Protocol</p>
-            </div>
-
-            <div class="alert hidden" id="alert-message"></div>
-
-            <form id="register-form">
-                <div class="form-group">
-                    <label for="username">Character Node ID</label>
-                    <input 
-                        type="text" 
-                        id="username" 
-                        name="username" 
-                        placeholder="3+ characters (a-z, 0-9, _, -)" 
-                        required
-                    >
-                    <div class="validation-msg" id="username-msg"></div>
-                </div>
-
-                <div class="form-group">
-                    <label for="password">Access Passkey</label>
-                    <input 
-                        type="password" 
-                        id="password" 
-                        name="password" 
-                        placeholder="8+ characters" 
-                        required
-                    >
-                    <div class="strength-meter">
-                        <div class="strength-bar" id="strength-bar"></div>
-                    </div>
-                    <div class="validation-msg" id="password-msg"></div>
-                </div>
-
-                <div class="form-group">
-                    <label for="password-confirm">Confirm Passkey</label>
-                    <input 
-                        type="password" 
-                        id="password-confirm" 
-                        name="password-confirm" 
-                        placeholder="Re-enter passkey" 
-                        required
-                    >
-                    <div class="validation-msg" id="confirm-msg"></div>
-                </div>
-
-                <div class="button-group">
-                    <button type="reset" id="reset-btn">RESET</button>
-                    <button type="submit" id="submit-btn" class="submit-btn">DEPLOY_NODE</button>
-                </div>
-            </form>
-
-            <div class="footer-link">
-                Already registered? <a href="index.html">Initialize Authentication</a>
-            </div>
-        </div>
+  <canvas id="matrix-bg"></canvas>
+  <div class="container">
+    <div class="box">
+      <h1>AetherClan Node Deploy</h1>
+      <p>Create a new node and register it with Supabase.</p>
+      <div id="message" class="message"></div>
+      <form id="register-form">
+        <label for="username">Character Node ID</label>
+        <input id="username" name="username" type="text" placeholder="e.g. pernzy" autocomplete="off" required>
+        <label for="password">Passkey</label>
+        <input id="password" name="password" type="password" placeholder="8+ characters" required>
+        <label for="password-confirm">Confirm Passkey</label>
+        <input id="password-confirm" name="password-confirm" type="password" placeholder="Repeat passkey" required>
+        <button id="submit-btn" class="button" type="submit">DEPLOY NODE</button>
+      </form>
+      <div class="footer">Already registered? <a href="index.html">Log in</a></div>
     </div>
+  </div>
+  <script>
+    function initMatrix() {
+      const canvas = document.getElementById('matrix-bg');
+      const ctx = canvas.getContext('2d');
+      const alphabet = '01ABCDEF@#$%^&*<>?~'.split('');
+      const fontSize = 16;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      let columns = Math.floor(canvas.width / fontSize);
+      let drops = Array(columns).fill(1);
+      function draw() {
+        ctx.fillStyle = 'rgba(5,5,18,.15)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.font = `${fontSize}px monospace`;
+        for (let x = 0; x < drops.length; x++) {
+          const text = alphabet[Math.floor(Math.random() * alphabet.length)];
+          ctx.fillStyle = 'rgba(77,224,255,.85)';
+          ctx.fillText(text, x * fontSize, drops[x] * fontSize);
+          if (drops[x] * fontSize > canvas.height && Math.random() > 0.975) drops[x] = 0;
+          drops[x]++;
+        }
+      }
+      function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; columns = Math.floor(canvas.width / fontSize); drops = Array(columns).fill(1); }
+      window.addEventListener('resize', resize);
+      setInterval(draw, 45);
+    }
 
-    <script>
-        // Get Supabase client from config.js (will initialize after DOM loads)
-        let supabase;
+    window.addEventListener('DOMContentLoaded', () => {
+      initMatrix();
+      const form = document.getElementById('register-form');
+      const usernameInput = document.getElementById('username');
+      const passwordInput = document.getElementById('password');
+      const confirmInput = document.getElementById('password-confirm');
+      const message = document.getElementById('message');
+      const submitBtn = document.getElementById('submit-btn');
 
-        // Matrix background animation
-        function initMatrix() {
-            const canvas = document.getElementById('matrix-bg');
-            const ctx = canvas.getContext('2d');
-            const alphabet = '0123456789ABCDEF@#$%&*<>?~'.split('');
-            const fontSize = 16;
-            
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            
-            let columns = Math.floor(window.innerWidth / fontSize);
-            let rainDrops = Array(columns).fill(1);
+      function setMessage(text, status) {
+        message.textContent = text;
+        message.className = `message ${status || ''}`.trim();
+      }
 
-            function drawFrame() {
-                ctx.fillStyle = 'rgba(5, 5, 18, 0.14)';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.font = `${fontSize}px Fira Code, monospace`;
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        setMessage('', '');
+        const username = usernameInput.value.trim().toLowerCase();
+        const password = passwordInput.value;
+        const confirm = confirmInput.value;
 
-                for (let i = 0; i < rainDrops.length; i++) {
-                    const char = alphabet[Math.floor(Math.random() * alphabet.length)];
-                    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-                    gradient.addColorStop(0, 'rgba(255, 62, 165, 0.95)');
-                    gradient.addColorStop(1, 'rgba(77, 224, 255, 0.75)');
-                    ctx.fillStyle = gradient;
-                    ctx.fillText(char, i * fontSize, rainDrops[i] * fontSize);
-                    if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                        rainDrops[i] = 0;
-                    }
-                    rainDrops[i]++;
-                }
-            }
-
-            function updateCanvasSize() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-                columns = Math.floor(canvas.width / fontSize);
-                rainDrops = Array(columns).fill(1);
-            }
-
-            updateCanvasSize();
-            window.addEventListener('resize', updateCanvasSize);
-            setInterval(drawFrame, 35);
+        if (username.length < 3 || !/^[a-z0-9_-]+$/.test(username)) {
+          return setMessage('Username must be 3+ chars and only letters/numbers/_/-.', 'error');
+        }
+        if (password.length < 8) {
+          return setMessage('Passkey must be at least 8 characters.', 'error');
+        }
+        if (password !== confirm) {
+          return setMessage('Passkeys do not match.', 'error');
         }
 
-        // Form validation and handling
-        const usernameInput = document.getElementById('username');
-        const passwordInput = document.getElementById('password');
-        const confirmInput = document.getElementById('password-confirm');
-        const form = document.getElementById('register-form');
-        const submitBtn = document.getElementById('submit-btn');
-        const alertDiv = document.getElementById('alert-message');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'DEPLOYING...';
 
-        // Username validation
-        usernameInput.addEventListener('input', () => {
-            const username = usernameInput.value.trim();
-            const msg = document.getElementById('username-msg');
+        try {
+          const supabase = getSupabase();
+          const userEmail = `${username}@gmail.com`;
 
-            if (!username) {
-                msg.textContent = 'Username required';
-                msg.className = 'validation-msg error';
-                return;
-            }
+          const { data: authData, error: authError } = await supabase.auth.signUp({ email: userEmail, password });
+          if (authError) throw authError;
+          if (!authData.user) throw new Error('Auth user creation failed.');
 
-            if (username.length < 3) {
-                msg.textContent = 'Minimum 3 characters';
-                msg.className = 'validation-msg error';
-                return;
-            }
+          const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .insert({
+              id: authData.user.id,
+              character_name: username,
+              account_status: 'ACTIVE',
+              rolling_7_day_points: 0,
+              current_month_points: 0,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            })
+            .select('id, character_name, account_status')
+            .single();
 
-            if (!/^[a-z0-9_-]+$/.test(username)) {
-                msg.textContent = 'Only alphanumeric, underscore, hyphen allowed';
-                msg.className = 'validation-msg error';
-                return;
-            }
+          if (profileError) throw profileError;
 
-            msg.textContent = '✓ Valid';
-            msg.className = 'validation-msg success';
-        });
-
-        // Password strength meter
-        passwordInput.addEventListener('input', () => {
-            const password = passwordInput.value;
-            const msg = document.getElementById('password-msg');
-            const bar = document.getElementById('strength-bar');
-            bar.className = 'strength-bar';
-
-            if (!password) {
-                msg.textContent = 'Passkey required';
-                msg.className = 'validation-msg error';
-                bar.className = 'strength-bar';
-                return;
-            }
-
-            if (password.length < 8) {
-                msg.textContent = `Minimum 8 characters (${password.length}/8)`;
-                msg.className = 'validation-msg error';
-                bar.className = 'strength-bar weak';
-                return;
-            }
-
-            let strength = 'weak';
-            if (password.length >= 12 && /[A-Z]/.test(password) && /[0-9]/.test(password)) {
-                strength = 'strong';
-            } else if (password.length >= 10 && /[0-9]/.test(password)) {
-                strength = 'medium';
-            }
-
-            bar.classList.add(strength);
-            msg.textContent = `✓ ${strength.toUpperCase()} password`;
-            msg.className = 'validation-msg success';
-        });
-
-        // Confirm password validation
-        confirmInput.addEventListener('input', () => {
-            const msg = document.getElementById('confirm-msg');
-
-            if (!confirmInput.value) {
-                msg.textContent = 'Confirm passkey';
-                msg.className = 'validation-msg error';
-                return;
-            }
-
-            if (passwordInput.value !== confirmInput.value) {
-                msg.textContent = 'Passkeys do not match';
-                msg.className = 'validation-msg error';
-                return;
-            }
-
-            msg.textContent = '✓ Passkeys match';
-            msg.className = 'validation-msg success';
-        });
-
-        // Form submission
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            // Initialize Supabase on first use
-            if (!supabase) {
-                supabase = getSupabase();
-            }
-
-            const username = usernameInput.value.trim().toLowerCase();
-            const password = passwordInput.value;
-
-            // Validate
-            if (username.length < 3 || !/^[a-z0-9_-]+$/.test(username)) {
-                showAlert('Invalid username format', 'error');
-                return;
-            }
-
-            if (password.length < 8) {
-                showAlert('Password must be 8+ characters', 'error');
-                return;
-            }
-
-            if (password !== confirmInput.value) {
-                showAlert('Passkeys do not match', 'error');
-                return;
-            }
-
-            // Submit
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="loading">⟳ DEPLOYING...</span>';
-
-            try {
-                const userEmail = `${username}@gmail.com`;
-
-                // 1. Create auth user
-                const { data: authUser, error: authError } = await supabase.auth.signUp({
-                    email: userEmail,
-                    password: password
-                });
-
-                if (authError) {
-                    throw new Error(authError.message || 'Failed to create auth user');
-                }
-
-                // 2. Create profile
-                const { data: profile, error: profileError } = await supabase
-                    .from('profiles')
-                    .insert({
-                        id: authUser.user.id,
-                        character_name: username,
-                        account_status: 'ACTIVE',
-                        rolling_7_day_points: 0,
-                        current_month_points: 0,
-                        created_at: new Date().toISOString(),
-                        updated_at: new Date().toISOString()
-                    })
-                    .select('id, character_name, account_status')
-                    .single();
-
-                if (profileError) {
-                    throw new Error(profileError.message || 'Failed to create profile');
-                }
-
-                showAlert(`✓ Node deployed! Check email at ${userEmail}`, 'success');
-                form.reset();
-                document.querySelectorAll('.validation-msg').forEach(el => {
-                    el.className = 'validation-msg';
-                });
-                document.getElementById('strength-bar').className = 'strength-bar';
-
-                // Redirect after 2 seconds
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 2000);
-
-            } catch (error) {
-                console.error('Registration error:', error);
-                showAlert(error.message || 'Registration failed', 'error');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = 'DEPLOY_NODE';
-            }
-        });
-
-        function showAlert(message, type) {
-            alertDiv.textContent = message;
-            alertDiv.className = `alert ${type}`;
-            
-            if (type === 'success') {
-                setTimeout(() => {
-                    alertDiv.className = 'alert hidden';
-                }, 3000);
-            }
+          setMessage('Node deployed successfully. Redirecting to login...', 'success');
+          setTimeout(() => window.location.href = 'index.html', 1800);
+        } catch (error) {
+          setMessage(error.message || 'Deployment failed.', 'error');
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'DEPLOY NODE';
         }
-
-        // Initialize
-        window.addEventListener('DOMContentLoaded', initMatrix);
-    </script>
-</body>
-</html>
-        .form-group input::placeholder {
-            color: #0f0;
-            opacity: 0.5;
-        }
-
-        .validation-msg {
-            font-size: 10px;
-            margin-top: 5px;
-            display: none;
-        }
-
-        .validation-msg.error {
-            color: #ff3ea5;
-            display: block;
-        }
-
-        .validation-msg.success {
-            color: #0f0;
-            display: block;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 30px;
-        }
-
-        button {
-            flex: 1;
-            padding: 12px;
-            border: 1px solid #ff3ea5;
-            background: transparent;
-            color: #ff3ea5;
-            font-family: 'Courier New', monospace;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-shadow: 0 0 5px rgba(255, 62, 165, 0.5);
-        }
-
-        button:hover:not(:disabled) {
-            background: #ff3ea5;
-            color: #050512;
-            box-shadow: 0 0 20px rgba(255, 62, 165, 0.6);
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .submit-btn {
-            background: #ff3ea5;
-            color: #050512;
-            border-color: #ff3ea5;
-        }
-
-        .submit-btn:hover:not(:disabled) {
-            background: transparent;
-            color: #ff3ea5;
-        }
-
-        .alert {
-            padding: 12px;
-            border: 1px solid;
-            margin-bottom: 20px;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: none;
-            border-radius: 2px;
-        }
-
-        .alert.hidden {
-            display: none;
-        }
-
-        .alert.error {
-            border-color: #ff3ea5;
-            background: rgba(255, 62, 165, 0.1);
-            color: #ff3ea5;
-            display: block;
-        }
-
-        .alert.success {
-            border-color: #0f0;
-            background: rgba(15, 240, 15, 0.1);
-            color: #0f0;
-            display: block;
-        }
-
-        .footer-link {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 11px;
-        }
-
-        .footer-link a {
-            color: #4de0ff;
-            text-decoration: none;
-            transition: all 0.3s;
-            text-shadow: 0 0 5px rgba(77, 224, 255, 0.5);
-        }
-
-        .footer-link a:hover {
-            color: #ff3ea5;
-            text-shadow: 0 0 10px rgba(255, 62, 165, 0.5);
-        }
-
-        .loading {
-            display: inline-block;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .strength-meter {
-            height: 4px;
-            background: #1a1a2e;
-            margin-top: 5px;
-            overflow: hidden;
-            border: 1px solid #4de0ff;
-        }
-
-        .strength-bar {
-            height: 100%;
-            background: #ff3ea5;
-            width: 0%;
-            transition: all 0.3s;
-        }
-
-        .strength-bar.weak {
-            width: 33%;
-            background: #ff3ea5;
-        }
-
-        .strength-bar.medium {
-            width: 66%;
-            background: #ffaa00;
-        }
-
-        .strength-bar.strong {
-            width: 100%;
-            background: #0f0;
-        }
-    </style>
-</head>
-<body>
-    <canvas id="matrix-bg"></canvas>
-
-    <div class="container">
-        <div class="register-box">
-            <div class="register-header">
-                <h1>⬡ AetherClan ⬡</h1>
-                <p>Node Registration Protocol</p>
-            </div>
-
-            <div class="alert hidden" id="alert-message"></div>
-
-            <form id="register-form">
-                <div class="form-group">
-                    <label for="username">Character Node ID</label>
-                    <input 
-                        type="text" 
-                        id="username" 
-                        name="username" 
-                        placeholder="3+ characters (a-z, 0-9, _, -)" 
-                        required
-                    >
-                    <div class="validation-msg" id="username-msg"></div>
-                </div>
-
-                <div class="form-group">
-                    <label for="password">Access Passkey</label>
-                    <input 
-                        type="password" 
-                        id="password" 
-                        name="password" 
-                        placeholder="8+ characters" 
-                        required
-                    >
-                    <div class="strength-meter">
-                        <div class="strength-bar" id="strength-bar"></div>
-                    </div>
-                    <div class="validation-msg" id="password-msg"></div>
-                </div>
-
-                <div class="form-group">
-                    <label for="password-confirm">Confirm Passkey</label>
-                    <input 
-                        type="password" 
-                        id="password-confirm" 
-                        name="password-confirm" 
-                        placeholder="Re-enter passkey" 
-                        required
-                    >
-                    <div class="validation-msg" id="confirm-msg"></div>
-                </div>
-
-                <div class="button-group">
-                    <button type="reset" id="reset-btn">RESET</button>
-                    <button type="submit" id="submit-btn" class="submit-btn">DEPLOY_NODE</button>
-                </div>
-            </form>
-
-            <div class="footer-link">
-                Already registered? <a href="index.html">Initialize Authentication</a>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Matrix background animation
-        function initMatrix() {
-            const canvas = document.getElementById('matrix-bg');
-            const ctx = canvas.getContext('2d');
-            const alphabet = '0123456789ABCDEF@#$%&*<>?~'.split('');
-            const fontSize = 16;
-            
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            
-            let columns = Math.floor(window.innerWidth / fontSize);
-            let rainDrops = Array(columns).fill(1);
-
-            function drawFrame() {
-                ctx.fillStyle = 'rgba(5, 5, 18, 0.14)';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.font = `${fontSize}px Fira Code, monospace`;
-
-                for (let i = 0; i < rainDrops.length; i++) {
-                    const char = alphabet[Math.floor(Math.random() * alphabet.length)];
-                    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-                    gradient.addColorStop(0, 'rgba(255, 62, 165, 0.95)');
-                    gradient.addColorStop(1, 'rgba(77, 224, 255, 0.75)');
-                    ctx.fillStyle = gradient;
-                    ctx.fillText(char, i * fontSize, rainDrops[i] * fontSize);
-                    if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                        rainDrops[i] = 0;
-                    }
-                    rainDrops[i]++;
-                }
-            }
-
-            function updateCanvasSize() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-                columns = Math.floor(canvas.width / fontSize);
-                rainDrops = Array(columns).fill(1);
-            }
-
-            updateCanvasSize();
-            window.addEventListener('resize', updateCanvasSize);
-            setInterval(drawFrame, 35);
-        }
-
-        // Form validation and handling
-        const usernameInput = document.getElementById('username');
-        const passwordInput = document.getElementById('password');
-        const confirmInput = document.getElementById('password-confirm');
-        const form = document.getElementById('register-form');
-        const submitBtn = document.getElementById('submit-btn');
-        const alertDiv = document.getElementById('alert-message');
-
-        // Username validation
-        usernameInput.addEventListener('input', () => {
-            const username = usernameInput.value.trim();
-            const msg = document.getElementById('username-msg');
-
-            if (!username) {
-                msg.textContent = 'Username required';
-                msg.className = 'validation-msg error';
-                return;
-            }
-
-            if (username.length < 3) {
-                msg.textContent = 'Minimum 3 characters';
-                msg.className = 'validation-msg error';
-                return;
-            }
-
-            if (!/^[a-z0-9_-]+$/.test(username)) {
-                msg.textContent = 'Only alphanumeric, underscore, hyphen allowed';
-                msg.className = 'validation-msg error';
-                return;
-            }
-
-            msg.textContent = '✓ Valid';
-            msg.className = 'validation-msg success';
-        });
-
-        // Password strength meter
-        passwordInput.addEventListener('input', () => {
-            const password = passwordInput.value;
-            const msg = document.getElementById('password-msg');
-            const bar = document.getElementById('strength-bar');
-            bar.className = 'strength-bar';
-
-            if (!password) {
-                msg.textContent = 'Passkey required';
-                msg.className = 'validation-msg error';
-                bar.className = 'strength-bar';
-                return;
-            }
-
-            if (password.length < 8) {
-                msg.textContent = `Minimum 8 characters (${password.length}/8)`;
-                msg.className = 'validation-msg error';
-                bar.className = 'strength-bar weak';
-                return;
-            }
-
-            let strength = 'weak';
-            if (password.length >= 12 && /[A-Z]/.test(password) && /[0-9]/.test(password)) {
-                strength = 'strong';
-            } else if (password.length >= 10 && /[0-9]/.test(password)) {
-                strength = 'medium';
-            }
-
-            bar.classList.add(strength);
-            msg.textContent = `✓ ${strength.toUpperCase()} password`;
-            msg.className = 'validation-msg success';
-        });
-
-        // Confirm password validation
-        confirmInput.addEventListener('input', () => {
-            const msg = document.getElementById('confirm-msg');
-
-            if (!confirmInput.value) {
-                msg.textContent = 'Confirm passkey';
-                msg.className = 'validation-msg error';
-                return;
-            }
-
-            if (passwordInput.value !== confirmInput.value) {
-                msg.textContent = 'Passkeys do not match';
-                msg.className = 'validation-msg error';
-                return;
-            }
-
-            msg.textContent = '✓ Passkeys match';
-            msg.className = 'validation-msg success';
-        });
-
-        // Form submission
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const username = usernameInput.value.trim();
-            const password = passwordInput.value;
-
-            // Validate
-            if (username.length < 3 || !/^[a-z0-9_-]+$/.test(username)) {
-                showAlert('Invalid username format', 'error');
-                return;
-            }
-
-            if (password.length < 8) {
-                showAlert('Password must be 8+ characters', 'error');
-                return;
-            }
-
-            if (password !== confirmInput.value) {
-                showAlert('Passkeys do not match', 'error');
-                return;
-            }
-
-            // Submit
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="loading">⟳ DEPLOYING...</span>';
-
-            try {
-                const response = await fetch('/api/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    showAlert(`Node deployed! Email: ${data.user.email}`, 'success');
-                    form.reset();
-                    document.querySelectorAll('.validation-msg').forEach(el => {
-                        el.className = 'validation-msg';
-                    });
-                    document.getElementById('strength-bar').className = 'strength-bar';
-
-                    // Redirect after 2 seconds
-                    setTimeout(() => {
-                        window.location.href = 'index.html';
-                    }, 2000);
-                } else {
-                    showAlert(data.error || 'Registration failed', 'error');
-                }
-            } catch (error) {
-                showAlert(`Error: ${error.message}`, 'error');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = 'DEPLOY_NODE';
-            }
-        });
-
-        function showAlert(message, type) {
-            alertDiv.textContent = message;
-            alertDiv.className = `alert ${type}`;
-            
-            if (type === 'success') {
-                setTimeout(() => {
-                    alertDiv.className = 'alert hidden';
-                }, 3000);
-            }
-        }
-
-        // Initialize
-        window.addEventListener('DOMContentLoaded', initMatrix);
-    </script>
+      });
+    });
+  </script>
 </body>
 </html>
