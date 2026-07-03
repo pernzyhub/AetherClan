@@ -66,7 +66,10 @@ function registerLoginHandlers() {
     discordLoginBtn.textContent = '🎮 INITIALIZING_DISCORD_AUTH...';
     try {
       const { data, error } = await dbClient.auth.signInWithOAuth({
-        provider: 'discord'
+        provider: 'discord',
+        options: {
+          redirectTo: window.location.origin + '/index.html'
+        }
       });
       if (error) throw error;
     } catch (error) {
