@@ -160,7 +160,7 @@
             const { data, error } = await supabase.auth.signInWithOAuth({
               provider: 'discord',
               options: {
-                redirectTo: window.location.origin + '/register.html'
+                redirectTo: window.OAUTH_REDIRECT_BASE + '/register.html'
               }
             });
             if (error) throw error;
