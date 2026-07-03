@@ -10,6 +10,8 @@ window.CONFIG = window.CONFIG || {
   SUPABASE_ANON_KEY: env.REACT_APP_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pc3pwYmF4dGtjZ2xwZHNqdGphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMzczOTEsImV4cCI6MjA5ODYxMzM5MX0.9YDKOHV1upxigsZSUXkYr_VNSXAc7CXlcCRu9BbIReA'
 };
 
+window.OAUTH_REDIRECT_BASE = window.OAUTH_REDIRECT_BASE || env.REACT_APP_OAUTH_REDIRECT_BASE || 'https://miszpbaxtkcglpdsjtja.supabase.co';
+console.log('[OAuth] effective redirect base:', window.OAUTH_REDIRECT_BASE);
 const CONFIG = window.CONFIG;
 
 // Initialize Supabase client - Check if already declared to avoid conflicts
