@@ -7,8 +7,10 @@ const CONFIG = {
   SUPABASE_ANON_KEY: process.env.REACT_APP_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pc3pwYmF4dGtjZ2xwZHNqdGphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMzczOTEsImV4cCI6MjA5ODYxMzM5MX0.9YDKOHV1upxigsZSUXkYr_VNSXAc7CXlcCRu9BbIReA'
 };
 
-// Initialize Supabase client
-let supabase = null;
+// Initialize Supabase client - Check if already declared to avoid conflicts
+if (typeof window.supabaseInstance === 'undefined') {
+  window.supabaseInstance = null;
+}
 
 function initSupabase() {
   if (!window.supabase) {
@@ -16,19 +18,19 @@ function initSupabase() {
     return null;
   }
   
-  if (!supabase) {
-    supabase = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+  if (!window.supabaseInstance) {
+    window.supabaseInstance = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
   }
   
-  return supabase;
+  return window.supabaseInstance;
 }
 
 // Get or create Supabase client
 function getSupabase() {
-  if (!supabase) {
+  if (!window.supabaseInstance) {
     return initSupabase();
   }
-  return supabase;
+  return window.supabaseInstance;
 }
 
 // Security Note: 
