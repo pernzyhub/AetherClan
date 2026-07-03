@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AETHERCLAN // ROSTER.sys</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-950 text-slate-200 p-8 font-mono">
+    <h2 class="text-emerald-400 text-xl mb-6">ROSTER_DIRECTORY</h2>
+    <div id="roster-list" class="grid gap-2"></div>
+    <script>
+        const supabase = window.supabase.createClient("https://mispbaxtkcglpdsjttja.supabase.co", "YOUR_ANON_KEY");
+        async function loadRoster() {
+            const { data } = await supabase.from('profiles').select('character_name, role, account_status');
+            document.getElementById('roster-list').innerHTML = data.map(m => `
+                <div class="flex justify-between p-4 border border-slate-700 bg-slate-900">
+                    <span>${m.character_name}</span>
+                    <span class="text-slate-400">${m.role}</span>
+                    <span class="${m.account_status === 'ACTIVE' ? 'text-emerald-500' : 'text-red-500'}">${m.account_status}</span>
+                </div>
+            `).join('');
+        }
+        loadRoster();
+    </script>
+</body>
+</html>

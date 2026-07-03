@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AETHERCLAN // EVENT_LEDGER.sys</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-950 text-slate-200 p-8 font-mono">
+    <h2 class="text-amber-400 text-xl mb-6">EVENT_ARCHIVE_LEDGER</h2>
+    <div id="ledger-list" class="space-y-2"></div>
+    <script>
+        const supabase = window.supabase.createClient("https://mispbaxtkcglpdsjttja.supabase.co", "YOUR_ANON_KEY");
+        async function loadLedger() {
+            const { data } = await supabase.from('event_history').select('*').order('archived_at', { ascending: false });
+            document.getElementById('ledger-list').innerHTML = data.map(e => `
+                <div class="p-4 border-l-4 border-amber-500 bg-slate-900">
+                    <p class="font-bold text-amber-500">${e.event_name}</p>
+                    <p class="text-xs text-slate-400">WINNER: ${e.winner_name} | RANK: ${e.rank}</p>
+                </div>
+            `).join('');
+        }
+        loadLedger();
+    </script>
+</body>
+</html>
