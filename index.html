@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NETWORK_ACCESS // TERMINAL_GATEWAY</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      // Use your Supabase project origin as the frontend redirect base.
+      // Discord OAuth callback should remain: https://miszpbaxtkcglpdsjtja.supabase.co/auth/v1/callback
+      window.OAUTH_REDIRECT_BASE = window.OAUTH_REDIRECT_BASE || 'https://miszpbaxtkcglpdsjtja.supabase.co';
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
     <script src="js/utils.js"></script>
