@@ -108,28 +108,20 @@
         submitBtn.textContent = 'DEPLOYING...';
 
         try {
-          const supabase = getSupabase();
-          const userEmail = `${username}@gmail.com`;
+          const response = await fetch('/api/register', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+          });
 
-          const { data: authData, error: authError } = await supabase.auth.signUp({ email: userEmail, password });
-          if (authError) throw authError;
-          if (!authData.user) throw new Error('Auth user creation failed.');
+          const result = await response.json().catch(() => null);
 
-          const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .insert({
-              id: authData.user.id,
-              character_name: username,
-              account_status: 'ACTIVE',
-              rolling_7_day_points: 0,
-              current_month_points: 0,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            })
-            .select('id, character_name, account_status')
-            .single();
-
-          if (profileError) throw profileError;
+          if (!response.ok || !result || !result.success) {
+            const errorMessage = result?.error || result?.message || `Registration failed (${response.status})`;
+            throw new Error(errorMessage);
+          }
 
           setMessage('Node deployed successfully. Redirecting to login...', 'success');
           setTimeout(() => window.location.href = 'index.html', 1800);
