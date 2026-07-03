@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AETHERCLAN // CORE_DASHBOARD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap');
+        body { font-family: 'Fira Code', monospace; background-color: #020617; }
+        .scanlines {
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%);
+            background-size: 100% 4px;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100 scanlines p-4 lg:p-8">
+
+    <header class="max-w-7xl mx-auto mb-8 border border-emerald-500/20 bg-slate-900/40 backdrop-blur p-4 rounded flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="flex items-center gap-3">
+            <div class="w-3 h-3 bg-emerald-500 rounded-full animate-ping"></div>
+            <div>
+                <h1 class="text-md font-bold uppercase tracking-wider text-slate-200">AETHERCLAN_OS // CONTROL_PANEL</h1>
+                <p class="text-xs text-emerald-500/70">OPERATOR_NODE: <span id="current-user-display" class="text-emerald-400 font-bold">...</span></p>
+            </div>
+        </div>
+        <nav class="flex flex-wrap gap-2">
+            <button onclick="switchTab('home')" class="tab-btn px-3 py-1.5 bg-emerald-950 text-emerald-400 border border-emerald-500/40 text-xs font-bold uppercase rounded">HOME.exe</button>
+            <button onclick="switchTab('requests')" class="tab-btn px-3 py-1.5 bg-slate-900 text-slate-400 border border-slate-800 text-xs font-bold uppercase rounded">REQUESTS.log</button>
+            <button onclick="switchTab('assist')" class="tab-btn px-3 py-1.5 bg-slate-900 text-slate-400 border border-slate-800 text-xs font-bold uppercase rounded">ASSIST.sys</button>
+            <button onclick="switchTab('admin')" id="admin-nav-btn" class="tab-btn px-3 py-1.5 bg-slate-900 text-slate-400 border border-slate-800 text-xs font-bold uppercase rounded hidden">ADMIN_PANEL.sys</button>
+            <button onclick="handleLogout()" class="px-3 py-1.5 bg-red-950/40 text-red-400 border border-red-900/50 text-xs font-bold uppercase rounded hover:bg-red-900/30">LOGOUT</button>
+        </nav>
+    </header>
+
+    <main class="max-w-7xl mx-auto">
+        
+        <section id="tab-home" class="tab-content grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="md:col-span-2 border border-emerald-500/20 bg-slate-900/20 backdrop-blur rounded p-6">
+                <h2 class="text-sm font-bold text-emerald-400 uppercase tracking-widest border-b border-emerald-500/20 pb-2 mb-4">📢 BROADCAST_FEED</h2>
+                <div id="announcements-container" class="space-y-4 text-sm text-slate-300">
+                    <div class="p-4 bg-slate-900/60 border border-slate-800 rounded">
+                        <span class="text-xs font-bold text-emerald-500">[SYSTEM_ALERT]</span>
+                        <p class="mt-1">Welcome to the integrated portal interface. View live operations or configure item deployments via your core system layout.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="border border-emerald-500/20 bg-slate-900/20 backdrop-blur rounded p-6">
+                <h2 class="text-sm font-bold text-emerald-400 uppercase tracking-widest border-b border-emerald-500/20 pb-2 mb-4">📜 CODE_OF_CONDUCT</h2>
+                <ol class="space-y-3 text-xs text-slate-400 list-decimal list-inside">
+                    <li>Maintain clean operational security protocol. Do not sharing authorization matrix.</li>
+                    <li>Loot allocation priority formulas run explicitly on lowest-quantity requests first.</li>
+                    <li>Maintain 7-day activity metrics to prevent structural node deactivation.</li>
+                </ol>
+            </div>
+        </section>
+
+        <section id="tab-requests" class="tab-content hidden grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="border border-emerald-500/20 bg-slate-900/20 backdrop-blur rounded p-6 h-fit">
+                <h2 class="text-sm font-bold text-emerald-400 uppercase tracking-widest border-b border-emerald-500/20 pb-2 mb-4">📥 INITIALIZE_MATERIAL_REQUEST</h2>
+                <form id="request-form" class="space-y-4">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">TARGET_MATERIAL</label>
+                        <select id="request-item" class="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 text-slate-200">
+                            <option value="Artifact Crystal">Artifact Crystal</option>
+                            <option value="Brokk Armor Blueprint">Brokk Armor Blueprint</option>
+                            <option value="Ancient Core Piece">Ancient Core Piece</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">QUANTITY_DEMAND</label>
+                        <input type="number" id="request-qty" min="1" required class="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 text-slate-200" placeholder="Minimum: 1">
+                    </div>
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold text-xs uppercase tracking-wider py-2 rounded shadow-lg transition-all">BROADCAST_DEMAND</button>
+                </form>
+            </div>
+            <div class="md:col-span-2 border border-emerald-500/20 bg-slate-900/20 backdrop-blur rounded p-6">
+                <h2 class="text-sm font-bold text-emerald-400 uppercase tracking-widest border-b border-emerald-500/20 pb-2 mb-4">📊 PRIORITIZED_ALLOCATION_MATRIX</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-800 text-slate-400 uppercase text-[10px] tracking-wider">
+                                <th class="pb-2">CHARACTER</th>
+                                <th class="pb-2">MATERIAL_ID</th>
+                                <th class="pb-2 text-center">QUANTITY</th>
+                                <th class="pb-2 text-right">TIMESTAMP</th>
+                            </tr>
+                        </thead>
+                        <tbody id="queue-table-body" class="divide-y divide-slate-900 text-slate-300">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-assist" class="tab-content hidden grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="border border-emerald-500/20 bg-slate-900/20 backdrop-blur rounded p-6 h-fit">
+                <h2 class="text-sm font-bold text-emerald-400 uppercase tracking-widest border-b border-emerald-500/20 pb-2 mb-4">➕ BROADCAST_REQUEST</h2>
+                <form id="assist-form" class="space-y-4">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">LOGISTICS_DESCRIPTION</label>
+                        <textarea id="assist-details" required rows="4" class="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 text-slate-200 placeholder:text-slate-700" placeholder="e.g., Need assistance running Tier-2 boss segment for armor pieces..."></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold text-xs uppercase tracking-wider py-2 rounded shadow-lg transition-all">INITIALIZE_BROADCAST</button>
+                </form>
+            </div>
+            <div class="md:col-span-2 border border-emerald-500/20 bg-slate-900/20 backdrop-blur rounded p-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-emerald-500/20 pb-2 mb-4 gap-2">
+                    <h2 class="text-sm font-bold text-emerald-400 uppercase tracking-widest">📡 LIVE_ASSISTANCE_LOGS</h2>
+                    <div id="assist-filters" class="flex flex-wrap gap-1 text-[10px] font-bold">
+                        <button onclick="filterAssist('ALL')" class="filter-btn px-2 py-0.5 bg-emerald-950 border border-emerald-500/40 text-emerald-400 rounded">ALL</button>
+                        <button onclick="filterAssist('PENDING')" class="filter-btn px-2 py-0.5 bg-slate-900 border border-slate-800 text-slate-400 rounded">PENDING</button>
+                        <button onclick="filterAssist('COMPLETE')" class="filter-btn px-2 py-0.5 bg-slate-900 border border-slate-800 text-slate-400 rounded">COMPLETE</button>
+                        <button onclick="filterAssist('CANCELLED')" class="filter-btn px-2 py-0.5 bg-slate-900 border border-slate-800 text-slate-400 rounded">CANCELLED</button>
+                    </div>
+                </div>
+                <div id="assist-cards-container" class="space-y-3">
+                    </div>
+            </div>
+        </section>
+
+        <section id="tab-admin" class="tab-content hidden grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="md:col-span-3 border border-red-500/20 bg-slate-900/10 rounded p-6">
+                <h2 class="text-sm font-bold text-red-400 uppercase tracking-widest border-b border-red-500/20 pb-2 mb-4">⚠️ CENTRAL_ADMINISTRATION_CORE</h2>
+                <p class="text-xs text-slate-400">Admin mechanisms linked successfully. System tables, roster node configuration tools, and the attendance point manager load here.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // INSERT YOUR SUPABASE SETTINGS HERE
+        const SUPABASE_URL = "https://your-supabase-project.supabase.co";
+        const SUPABASE_ANON_KEY = "your-actual-anon-key-here";
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentProfile = null;
+        let activeAssistFilter = "ALL";
+
+        // Global initialization entry point
+        window.addEventListener('DOMContentLoaded', async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                window.location.href = "/index.html"; // Redirect unauthorized vectors back to base gateway
+                return;
+            }
+            await fetchUserProfile(session.user);
+            loadLootQueue();
+            loadAssistanceLogs();
+        });
+
+        async function fetchUserProfile(authUser) {
+            const charName = authUser.email.split('@')[0]; // Grabs handle from auth format structure
+            const { data, error } = await supabase.from('profiles').select('*').eq('character_name', charName).single();
+            if (!error && data) {
+                currentProfile = data;
+                document.getElementById('current-user-display').innerText = data.character_name.toUpperCase();
+                
+                // Admin Toggle Privilege check: For now, let's unlock it if character name is Pernzy
+                if(data.character_name.toLowerCase() === 'pernzy') {
+                    document.getElementById('admin-nav-btn').classList.remove('hidden');
+                }
+            }
+        }
+
+        // Tab Workspace Switching Mechanics
+        function switchTab(targetTab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-emerald-950', 'text-emerald-400', 'border-emerald-500/40');
+                btn.classList.add('bg-slate-900', 'text-slate-400', 'border-slate-800');
+            });
+            
+            document.getElementById(`tab-${targetTab}`).classList.remove('hidden');
+            event.target.classList.remove('bg-slate-900', 'text-slate-400', 'border-slate-800');
+            event.target.classList.add('bg-emerald-950', 'text-emerald-400', 'border-emerald-500/40');
+        }
+
+        // --- FETCH & POST LOOT ALLOCATION REQUESTS ---
+        async function loadLootQueue() {
+            // Priority allocation formula sorting logic: Lowest Quantity First, then Oldest Timestamp First
+            const { data, error } = await supabase
+                .from('item_requests')
+                .select('*, profiles(character_name)')
+                .order('quantity', { ascending: true })
+                .order('created_at', { ascending: true });
+
+            const tbody = document.getElementById('queue-table-body');
+            tbody.innerHTML = '';
+            
+            if (data) {
+                data.forEach(req => {
+                    const row = `
+                        <tr class="hover:bg-slate-900/50 transition-colors">
+                            <td class="py-2.5 font-bold text-emerald-400">${req.profiles?.character_name || 'UNKNOWN'}</td>
+                            <td class="py-2.5">${req.item_name}</td>
+                            <td class="py-2.5 text-center font-bold text-slate-100">${req.quantity}</td>
+                            <td class="py-2.5 text-right text-slate-500 text-[10px]">${new Date(req.created_at).toLocaleTimeString()}</td>
+                        </tr>`;
+                    tbody.innerHTML += row;
+                });
+            }
+        }
+
+        document.getElementById('request-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if(!currentProfile) return;
+
+            const item = document.getElementById('request-item').value;
+            const qty = parseInt(document.getElementById('request-qty').value);
+
+            const { error } = await supabase.from('item_requests').insert({
+                profile_id: currentProfile.id,
+                item_name: item,
+                quantity: qty
+            });
+
+            if(!error) {
+                document.getElementById('request-qty').value = '';
+                loadLootQueue();
+            }
+        });
+
+        // --- FETCH & POST ASSIST.sys ENTRIES ---
+        async function loadAssistanceLogs() {
+            let query = supabase.from('assistance_requests').select('*, profiles(character_name)');
+            if (activeAssistFilter !== 'ALL') {
+                query = query.eq('status', activeAssistFilter);
+            }
+            const { data } = await query.order('created_at', { ascending: false });
+            
+            const container = document.getElementById('assist-cards-container');
+            container.innerHTML = '';
+
+            if(data) {
+                data.forEach(req => {
+                    const isOwner = currentProfile && currentProfile.id === req.profile_id;
+                    let actionButtons = '';
+                    
+                    if(isOwner && req.status === 'PENDING') {
+                        actionButtons = `
+                            <div class="flex gap-2 mt-2">
+                                <button onclick="cancelAssist(${req.id})" class="text-[10px] font-bold text-red-400 uppercase hover:underline">[❌ Cancel]</button>
+                            </div>`;
+                    }
+
+                    const card = `
+                        <div class="p-4 bg-slate-900/40 border border-slate-800 rounded flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-xs font-bold text-emerald-400">${req.profiles?.character_name.toUpperCase() || 'NODE'}</span>
+                                    <span class="text-[10px] px-1.5 py-0.5 rounded font-bold ${req.status === 'PENDING' ? 'bg-amber-950 text-amber-400 border border-amber-500/30' : 'bg-slate-900 text-slate-500'}">${req.status}</span>
+                                </div>
+                                <p class="text-xs text-slate-300 mt-1">${req.request_details}</p>
+                            </div>
+                            ${actionButtons}
+                        </div>`;
+                    container.innerHTML += card;
+                });
+            }
+        }
+
+        document.getElementById('assist-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if(!currentProfile) return;
+
+            const details = document.getElementById('assist-details').value;
+            const { error } = await supabase.from('assistance_requests').insert({
+                profile_id: currentProfile.id,
+                request_details: details
+            });
+
+            if(!error) {
+                document.getElementById('assist-details').value = '';
+                loadAssistanceLogs();
+            }
+        });
+
+        async function cancelAssist(id) {
+            await supabase.from('assistance_requests').update({ status: 'CANCELLED' }).eq('id', id);
+            loadAssistanceLogs();
+        }
+
+        function filterAssist(status) {
+            activeAssistFilter = status;
+            document.querySelectorAll('#assist-filters button').forEach(btn => {
+                btn.classList.remove('bg-emerald-950', 'text-emerald-400', 'border-emerald-500/40');
+                btn.classList.add('bg-slate-900', 'text-slate-400', 'border-slate-800');
+            });
+            event.target.classList.remove('bg-slate-900', 'text-slate-400', 'border-slate-800');
+            event.target.classList.add('bg-emerald-950', 'text-emerald-400', 'border-emerald-500/40');
+            loadAssistanceLogs();
+        }
+
+        async function handleLogout() {
+            await supabase.auth.signOut();
+            window.location.href = "/index.html";
+        }
+    </script>
+</body>
+</html>
