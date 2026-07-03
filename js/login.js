@@ -66,10 +66,7 @@ function registerLoginHandlers() {
     discordLoginBtn.textContent = '🎮 INITIALIZING_DISCORD_AUTH...';
     try {
       const { data, error } = await dbClient.auth.signInWithOAuth({
-        provider: 'discord',
-        options: {
-          redirectTo: window.location.origin + '/dashboard.html'
-        }
+        provider: 'discord'
       });
       if (error) throw error;
     } catch (error) {
@@ -182,5 +179,17 @@ function registerLoginHandlers() {
 
 window.addEventListener('DOMContentLoaded', () => {
   startCyberCanvas();
-  registerLoginHandlers();
+  
+  // Check if user already has a session (OAuth callback redirect)
+  dbClient.auth.getSession().then(({ data: { session } }) => {
+    if (session) {
+      console.log('[Auth] Session detected, redirecting to dashboard');
+      window.location.href = 'dashboard.html';
+    } else {
+      registerLoginHandlers();
+    }
+  }).catch(err => {
+    console.error('[Auth] Session check error:', err);
+    registerLoginHandlers();
+  });
 });
