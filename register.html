@@ -91,7 +91,13 @@
 
       // Check for existing session (Discord OAuth callback)
       const supabase = getSupabase();
-      supabase.auth.getSession().then(async ({ data: { session } }) => {
+      const checkSession = async () => {
+        if (supabase.auth.getSessionFromUrl) {
+          await supabase.auth.getSessionFromUrl().catch(() => null);
+        }
+        return supabase.auth.getSession();
+      };
+      checkSession().then(async ({ data: { session } }) => {
         if (session && session.user) {
           console.log('[Register] Discord session detected, creating profile...');
           try {
