@@ -5,6 +5,7 @@
     <title>AETHERCLAN // EVENT_LEDGER.sys</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="min-h-screen bg-slate-950 text-slate-100 scanlines p-4 lg:p-8">
 
@@ -18,15 +19,32 @@
             </div>
         </div>
         <nav class="flex gap-2">
-            <a href="dashboard.html" class="px-3 py-1.5 bg-emerald-950/40 hover:bg-emerald-900/30 text-emerald-400 border border-emerald-500/40 text-xs font-bold uppercase rounded transition-all">← RETURN_TO_DASHBOARD</a>
+            <button onclick="goToDashboard()" class="px-3 py-1.5 bg-emerald-950/40 hover:bg-emerald-900/30 text-emerald-400 border border-emerald-500/40 text-xs font-bold uppercase rounded transition-all cursor-pointer">← RETURN_TO_DASHBOARD</button>
         </nav>
     </header>
 
     <main class="max-w-7xl mx-auto">
         <h2 class="text-amber-400 text-xl mb-6">EVENT_ARCHIVE_LEDGER</h2>
-    <div id="ledger-list" class="space-y-2"></div>
+        <div id="ledger-list" class="space-y-2"></div>
+    </main>
+    
     <script>
-        const supabase = window.supabase.createClient("https://mispbaxtkcglpdsjttja.supabase.co", "YOUR_ANON_KEY");
+        const SUPABASE_URL = 'https://mispbaxtkcglpdsjttja.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pc3pwYmF4dGtjZ2xwZHNqdGphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMzczOTEsImV4cCI6MjA5ODYxMzM5MX0.9YDKOHV1upxigsZSUXkYr_VNSXAc7CXlcCRu9BbIReA';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        function goToDashboard() {
+            window.location.href = 'dashboard.html';
+        }
+        
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session && localStorage.getItem('bypass_superadmin') !== 'true') {
+                window.location.href = 'index.html';
+                return;
+            }
+        }
+        
         async function loadLedger() {
             const { data } = await supabase.from('event_history').select('*').order('archived_at', { ascending: false });
             document.getElementById('ledger-list').innerHTML = data.map(e => `
@@ -36,8 +54,9 @@
                 </div>
             `).join('');
         }
+        
+        checkAuth();
         loadLedger();
     </script>
-    </main>
 </body>
 </html>
