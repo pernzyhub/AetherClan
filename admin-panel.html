@@ -6,28 +6,21 @@
     <title>AETHERCLAN // CENTRAL_ADMIN_CORE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap');
-        body { font-family: 'Fira Code', monospace; background-color: #020617; }
-        .scanlines {
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%);
-            background-size: 100% 4px;
-        }
-    </style>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="min-h-screen bg-slate-950 text-slate-100 scanlines p-4 lg:p-8">
 
     <!-- TOP HEADER INTERFACE -->
-    <header class="max-w-7xl mx-auto mb-8 border border-red-500/30 bg-slate-900/40 backdrop-blur p-4 rounded flex flex-col md:flex-row justify-between items-center gap-4">
+    <header class="max-w-7xl mx-auto mb-8 purple-card backdrop-blur p-4 rounded flex flex-col md:flex-row justify-between items-center gap-4">
         <div class="flex items-center gap-3">
-            <div class="w-3 h-3 bg-red-500 rounded-full animate-ping"></div>
+            <div class="w-3 h-3 bg-pink-400 rounded-full animate-ping"></div>
             <div>
-                <h1 class="text-md font-bold uppercase tracking-wider text-slate-200">AETHERCLAN_OS // CENTRAL_ADMINISTRATION_CORE</h1>
-                <p class="text-xs text-red-400">SECURE_NODE // RESTRICTED_ACCESS</p>
+                <h1 class="text-md font-bold uppercase tracking-wider text-slate-200 glow">AETHERCLAN_OS // CENTRAL_ADMINISTRATION_CORE</h1>
+                <p class="text-xs text-pink-300">SECURE_NODE // RESTRICTED_ACCESS</p>
             </div>
         </div>
         <nav class="flex gap-2">
-            <a href="dashboard.html" class="px-3 py-1.5 bg-slate-900 text-slate-400 border border-slate-800 text-xs font-bold uppercase rounded hover:border-emerald-500/40 hover:text-emerald-400 transition-all">← RETURN_TO_DASHBOARD</a>
+            <a href="dashboard.html" class="px-3 py-1.5 cyan-button text-slate-100 text-xs font-bold uppercase rounded">← RETURN_TO_DASHBOARD</a>
         </nav>
     </header>
 
@@ -35,13 +28,13 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             
             <!-- 1. ROSTER NODE MANAGEMENT -->
-            <div class="border border-red-500/30 bg-slate-900/20 backdrop-blur rounded p-6 space-y-4">
-                <h2 class="text-sm font-bold text-red-400 uppercase tracking-widest border-b border-red-500/20 pb-2">👥 ROSTER_NODE_MANAGEMENT</h2>
+            <div class="purple-card rounded-3xl p-6 space-y-4">
+                <h2 class="text-sm font-bold text-pink-300 uppercase tracking-widest border-b border-pink-500/20 pb-2">👥 ROSTER_NODE_MANAGEMENT</h2>
                 
                 <div>
                     <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">DEPLOY_NEW_NODES</label>
-                    <textarea id="bulk-roster-input" rows="2" class="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-xs focus:outline-none focus:border-red-500 text-slate-200 placeholder:text-slate-700" placeholder="Enter single name, or comma-separated list (e.g., Character1, Character2)"></textarea>
-                    <button onclick="deployRosterNodes()" class="w-full mt-2 bg-red-950/40 hover:bg-red-900/40 text-red-400 border border-red-500/30 font-bold text-xs uppercase tracking-wider py-1.5 rounded transition-all">INITIALIZE_NODE_DEPLOYMENT</button>
+                    <textarea id="bulk-roster-input" rows="2" class="w-full input-glow rounded px-3 py-2 text-xs focus:outline-none transition-all placeholder:text-slate-600" placeholder="Enter single name, or comma-separated list (e.g., Character1, Character2)"></textarea>
+                    <button id="deploy-nodes-btn" class="w-full mt-2 violet-button text-xs font-bold uppercase tracking-wider py-1.5 rounded">INITIALIZE_NODE_DEPLOYMENT</button>
                 </div>
 
                 <hr class="border-slate-900">
@@ -55,13 +48,13 @@
             </div>
 
             <!-- 2. EVENT_CORE.sys & ATTENDANCE MANAGEMENT -->
-            <div class="md:col-span-2 border border-red-500/30 bg-slate-900/20 backdrop-blur rounded p-6 flex flex-col justify-between">
+            <div class="md:col-span-2 purple-card rounded-3xl p-6 flex flex-col justify-between">
                 <div>
-                    <h2 class="text-sm font-bold text-red-400 uppercase tracking-widest border-b border-red-500/20 pb-2 mb-4">🛰️ EVENT_CORE_LOG_ENGINE</h2>
+                    <h2 class="text-sm font-bold text-pink-300 uppercase tracking-widest border-b border-pink-500/20 pb-2 mb-4">🛰️ EVENT_CORE_LOG_ENGINE</h2>
                     <form id="event-form" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
                             <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">EVENT_TEMPLATE</label>
-                            <select id="event-select" class="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-xs focus:outline-none focus:border-red-500 text-slate-200">
+                            <select id="event-select" class="w-full input-glow rounded px-3 py-2 text-xs focus:outline-none transition-all placeholder:text-slate-600">
                                 <option value="Sindri's Island (8:00 PM)|35">Sindri's Island (8:00 PM) [+35 pts]</option>
                                 <option value="Guild War Segment|20">Guild War Segment [+20 pts]</option>
                                 <option value="Minor Skirmish|5">Minor Skirmish [+5 pts]</option>
@@ -69,7 +62,7 @@
                         </div>
                         <div class="sm:col-span-2">
                             <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">IMAGE_RECEIPT_PROOF (AUTOMATIC_COMPRESSION)</label>
-                            <input type="file" id="event-screenshot" accept="image/*" class="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1.5 text-xs text-slate-400 file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:font-bold file:bg-red-950/40 file:text-red-400 hover:file:bg-red-900/30">
+                            <input type="file" id="event-screenshot" accept="image/*" class="w-full input-glow rounded px-2 py-1.5 text-xs text-slate-200 file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:font-bold file:bg-pink-950/40 file:text-pink-300 hover:file:bg-pink-900/30">
                         </div>
 
                         <div class="sm:col-span-3">
@@ -80,7 +73,7 @@
                         </div>
 
                         <div class="sm:col-span-3 mt-2">
-                            <button type="submit" class="w-full bg-red-700 hover:bg-red-600 text-slate-950 font-bold text-xs uppercase tracking-wider py-2.5 rounded shadow-lg transition-all">DISPATCH_EVENT_LEDGER</button>
+                            <button type="submit" class="w-full neon-button text-slate-100 font-bold text-xs uppercase tracking-wider py-2.5 rounded">DISPATCH_EVENT_LEDGER</button>
                         </div>
                     </form>
                 </div>
@@ -88,182 +81,15 @@
         </div>
 
         <!-- 3. INCOMING ASSIST DISPOSITION -->
-        <div class="border border-red-500/30 bg-slate-900/20 backdrop-blur rounded p-6">
-            <h2 class="text-sm font-bold text-red-400 uppercase tracking-widest border-b border-red-500/20 pb-2 mb-4">🎛️ INCOMING_ASSIST_DISPOSITION</h2>
+        <div class="purple-card rounded-3xl p-6">
+            <h2 class="text-sm font-bold text-pink-300 uppercase tracking-widest border-b border-pink-500/20 pb-2 mb-4">🎛️ INCOMING_ASSIST_DISPOSITION</h2>
             <div id="admin-assist-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- Log entries load here -->
             </div>
         </div>
     </main>
 
-    <script>
-        // REPLACE THESE WITH YOUR ACTUAL SUPABASE TOKENS
-        const SUPABASE_URL = "https://mispbaxtkcglpdsjttja.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pc3pwYmF4dGtjZ2xwZHNqdGphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMzczOTEsImV4cCI6MjA5ODYxMzM5MX0.9YDKOHV1upxigsZSUXkYr_VNSXAc7CXlcCRu9BbIReA";
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        let currentProfile = null;
-
-        window.addEventListener('DOMContentLoaded', async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-                window.location.href = "index.html";
-                return;
-            }
-            
-            // Security verification: Confirm username handle is administrative identity
-            const charName = session.user.email.split('@')[0];
-            const { data: profile } = await supabase.from('profiles').select('*').eq('character_name', charName).single();
-            
-            if (!profile || profile.character_name.toLowerCase() !== 'pernzy') {
-                alert("ACCESS VIOLATION: Secure administrative validation failed.");
-                window.location.href = "dashboard.html";
-                return;
-            }
-
-            currentProfile = profile;
-            loadAdminRosterStream();
-            loadAdminAssistRequests();
-        });
-
-        async function loadAdminRosterStream() {
-            const { data } = await supabase.from('profiles').select('*').order('character_name', { ascending: true });
-            const listContainer = document.getElementById('admin-roster-list');
-            const checkGrid = document.getElementById('attendance-check-grid');
-            
-            listContainer.innerHTML = '';
-            checkGrid.innerHTML = '';
-
-            if (data) {
-                data.forEach(profile => {
-                    const isDeactivated = profile.account_status === 'DISCONNECTED';
-                    listContainer.innerHTML += `
-                        <div class="flex items-center justify-between text-xs p-1.5 bg-slate-950/40 border border-slate-900 rounded">
-                            <span class="${isDeactivated ? 'text-slate-600 line-through' : 'text-slate-300 font-bold'}">${profile.character_name}</span>
-                            ${isDeactivated ? `[DARK_NODE]` : `<button onclick="toggleNodeState('${profile.id}', 'DISCONNECTED')" class="text-[9px] text-red-400/70 hover:text-red-400 font-bold uppercase">[🔴 DEACTIVATE]</button>`}
-                        </div>`;
-
-                    if(!isDeactivated) {
-                        checkGrid.innerHTML += `
-                            <label class="flex items-center gap-2 p-1.5 hover:bg-slate-900/60 rounded text-xs text-slate-300 cursor-pointer">
-                                <input type="checkbox" name="attendee-node" value="${profile.character_name}" class="accent-red-500 rounded bg-slate-900 border-slate-800">
-                                <span>${profile.character_name}</span>
-                            </label>`;
-                    }
-                });
-            }
-        }
-
-        async function toggleNodeState(profileId, newState) {
-            if(confirm("Confirm security payload change on target roster node?")) {
-                await supabase.from('profiles').update({ account_status: newState }).eq('id', profileId);
-                loadAdminRosterStream();
-            }
-        }
-
-        async function deployRosterNodes() {
-            const rawInput = document.getElementById('bulk-roster-input').value;
-            if(!rawInput.trim()) return;
-            const names = rawInput.split(',').map(n => n.trim()).filter(n => n.length > 0);
-            
-            for (const name of names) {
-                await supabase.from('profiles').insert({ id: crypto.randomUUID(), character_name: name, account_status: 'ACTIVE' });
-            }
-            document.getElementById('bulk-roster-input').value = '';
-            loadAdminRosterStream();
-        }
-
-        document.getElementById('event-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const eventPayload = document.getElementById('event-select').value.split('|');
-            const eventName = eventPayload[0];
-            const pointValue = parseInt(eventPayload[1]);
-            const imageFile = document.getElementById('event-screenshot').files[0];
-            const checkedBoxes = document.querySelectorAll('input[name="attendee-node"]:checked');
-            const attendeesArray = Array.from(checkedBoxes).map(cb => cb.value);
-
-            if(attendeesArray.length === 0) return alert("Attendee array cannot be empty.");
-            let publicUrl = imageFile ? await compressAndUploadReceipt(imageFile) : null;
-
-            await supabase.from('event_ledgers').insert({
-                event_name: eventName,
-                time_stamp_target: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                point_valency: pointValue,
-                attendees: attendeesArray,
-                screenshot_url: publicUrl
-            });
-
-            for(const name of attendeesArray) {
-                const { data: p } = await supabase.from('profiles').select('current_month_points, rolling_7_day_points').eq('character_name', name).single();
-                if(p) {
-                    await supabase.from('profiles').update({
-                        current_month_points: p.current_month_points + pointValue,
-                        rolling_7_day_points: p.rolling_7_day_points + pointValue
-                    }).eq('character_name', name);
-                }
-            }
-
-            alert("Event logged and point systems recompiled!");
-            document.getElementById('event-form').reset();
-            loadAdminRosterStream();
-        });
-
-        async function compressAndUploadReceipt(file) {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = function (event) {
-                    const img = new Image();
-                    img.src = event.target.result;
-                    img.onload = function () {
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-                        const maxW = 1200;
-                        const scale = maxW / img.width;
-                        canvas.width = maxW;
-                        canvas.height = img.height * scale;
-                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        canvas.toBlob(async (blob) => {
-                            const compressedFile = new File([blob], `receipt_${Date.now()}.jpg`, { type: "image/jpeg" });
-                            const filePath = `receipts/${compressedFile.name}`;
-                            const { data, error } = await supabase.storage.from('event-proofs').upload(filePath, compressedFile);
-                            if (error) resolve(null);
-                            else {
-                                const { data: urlData } = supabase.storage.from('event-proofs').getPublicUrl(filePath);
-                                resolve(urlData.publicUrl);
-                            }
-                        }, 'image/jpeg', 0.6);
-                    };
-                };
-            });
-        }
-
-        async function loadAdminAssistRequests() {
-            const { data } = await supabase.from('assistance_requests').select('*, profiles(character_name)').eq('status', 'PENDING').order('created_at', { ascending: true });
-            const container = document.getElementById('admin-assist-container');
-            container.innerHTML = '';
-
-            if (data && data.length > 0) {
-                data.forEach(req => {
-                    container.innerHTML += `
-                        <div class="p-3 bg-slate-950 border border-slate-800 rounded flex flex-col justify-between text-xs">
-                            <div><div class="text-red-400 font-bold mb-1">REQ_NODE: ${req.profiles?.character_name.toUpperCase()}</div><p class="text-slate-400">${req.request_details}</p></div>
-                            <div class="flex gap-4 mt-3 border-t border-slate-900 pt-2">
-                                <button onclick="resolveAssistNode(${req.id}, 'COMPLETE')" class="text-emerald-400 font-bold uppercase hover:underline">[🟢 RESOLVE]</button>
-                                <button onclick="resolveAssistNode(${req.id}, 'REJECTED')" class="text-red-400 font-bold uppercase hover:underline">[❌ FLAG_REJECT]</button>
-                            </div>
-                        </div>`;
-                });
-            } else {
-                container.innerHTML = `<div class="text-xs text-slate-600 italic">No coordination requests waiting in pipeline.</div>`;
-            }
-        }
-
-        async function resolveAssistNode(id, resultStatus) {
-            await supabase.from('assistance_requests').update({ status: resultStatus }).eq('id', id);
-            loadAdminAssistRequests();
-        }
-    </script>
+    <script src="js/admin.js"></script>
 </body>
 </html>
 

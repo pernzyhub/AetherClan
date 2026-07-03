@@ -1,0 +1,141 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap');
+:root {
+  color-scheme: dark;
+  --bg-dark: #050114;
+  --surface: rgba(10, 8, 18, 0.94);
+  --surface-soft: rgba(10, 8, 18, 0.76);
+  --text: #e8efff;
+  --muted: #9ca7c6;
+  --pink: #ff3ea5;
+  --cyan: #4de0ff;
+  --purple: #b939ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: 'Fira Code', monospace;
+  background: radial-gradient(circle at top left, rgba(77, 224, 255, 0.15), transparent 20%),
+              radial-gradient(circle at bottom right, rgba(255, 62, 165, 0.16), transparent 18%),
+              linear-gradient(180deg, #03010b 0%, #080818 40%, #050113 100%);
+  color: var(--text);
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 15% 10%, rgba(255, 62, 165, 0.08), transparent 18%),
+              radial-gradient(circle at 85% 20%, rgba(77, 224, 255, 0.08), transparent 16%);
+  pointer-events: none;
+}
+
+.scanlines {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.05) 50%, rgba(0, 0, 0, 0.09) 50%);
+  background-size: 100% 5px;
+}
+
+.neon-card {
+  background: rgba(8, 8, 20, 0.88);
+  border: 1px solid rgba(255, 62, 165, 0.18);
+  box-shadow: 0 0 40px rgba(255, 62, 165, 0.1);
+}
+
+.cyan-card {
+  background: rgba(8, 8, 20, 0.88);
+  border: 1px solid rgba(77, 224, 255, 0.18);
+  box-shadow: 0 0 40px rgba(77, 224, 255, 0.1);
+}
+
+.purple-card {
+  background: rgba(8, 8, 20, 0.88);
+  border: 1px solid rgba(185, 57, 255, 0.18);
+  box-shadow: 0 0 40px rgba(185, 57, 255, 0.1);
+}
+
+.neon-button {
+  transition: all 180ms ease;
+  border: 1px solid rgba(255, 62, 165, 0.35);
+  background: rgba(255, 62, 165, 0.12);
+  color: #f8f7ff;
+}
+
+.neon-button:hover,
+.cyan-button:hover,
+.violet-button:hover {
+  transform: translateY(-1px);
+}
+
+.cyan-button {
+  transition: all 180ms ease;
+  border: 1px solid rgba(77, 224, 255, 0.35);
+  background: rgba(77, 224, 255, 0.1);
+  color: #e8efff;
+}
+
+.violet-button {
+  transition: all 180ms ease;
+  border: 1px solid rgba(185, 57, 255, 0.35);
+  background: rgba(185, 57, 255, 0.12);
+  color: #e8efff;
+}
+
+.neon-button:hover {
+  background: rgba(255, 62, 165, 0.18);
+  box-shadow: 0 0 22px rgba(255, 62, 165, 0.25);
+}
+
+.cyan-button:hover {
+  background: rgba(77, 224, 255, 0.16);
+  box-shadow: 0 0 22px rgba(77, 224, 255, 0.22);
+}
+
+.violet-button:hover {
+  background: rgba(185, 57, 255, 0.16);
+  box-shadow: 0 0 22px rgba(185, 57, 255, 0.22);
+}
+
+.input-glow,
+textarea,
+select,
+input[type='text'],
+input[type='password'] {
+  background: rgba(10, 8, 20, 0.88);
+  border-color: rgba(255, 62, 165, 0.18);
+  color: var(--text);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: rgba(77, 224, 255, 0.5);
+  box-shadow: 0 0 0 3px rgba(77, 224, 255, 0.08);
+}
+
+.glow {
+  text-shadow: 0 0 18px rgba(255, 62, 165, 0.5), 0 0 30px rgba(77, 224, 255, 0.18);
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: 'Fira Code', monospace;
+}
+
+canvas#matrix-bg {
+  mix-blend-mode: screen;
+}
+
+::selection {
+  background: rgba(255, 62, 165, 0.45);
+  color: #fff;
+}
