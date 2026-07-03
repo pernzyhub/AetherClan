@@ -58,7 +58,30 @@ function registerLoginHandlers() {
   const resetSubmitBtn = document.getElementById('reset-submit-btn');
   const errorBanner = document.getElementById('error-banner');
   const errorMessage = document.getElementById('error-message');
+  const discordLoginBtn = document.getElementById('discord-login-btn');
 
+  // Discord OAuth Login
+  discordLoginBtn.addEventListener('click', async () => {
+    discordLoginBtn.disabled = true;
+    discordLoginBtn.textContent = '🎮 INITIALIZING_DISCORD_AUTH...';
+    try {
+      const { data, error } = await dbClient.auth.signInWithOAuth({
+        provider: 'discord',
+        options: {
+          redirectTo: window.location.origin + '/dashboard.html'
+        }
+      });
+      if (error) throw error;
+    } catch (error) {
+      console.error('[Discord Login] Error:', error);
+      errorMessage.innerText = error.message || 'Discord authentication failed.';
+      errorBanner.classList.remove('hidden');
+      discordLoginBtn.disabled = false;
+      discordLoginBtn.textContent = '🎮 LOGIN_WITH_DISCORD';
+    }
+  });
+
+  // Email/Password Login
   loginForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     submitBtn.disabled = true;
@@ -89,7 +112,7 @@ function registerLoginHandlers() {
         throw new Error('Node deactivated.');
       }
 
-      const targetEmail = `${profileNode.character_name.toLowerCase()}@aetherclan.local`;
+      const targetEmail = `${profileNode.character_name.toLowerCase()}@gmail.com`;
       const { error: authError } = await dbClient.auth.signInWithPassword({
         email: targetEmail,
         password: passkey,
@@ -126,7 +149,7 @@ function registerLoginHandlers() {
         throw new Error('Character node not found.');
       }
 
-      const targetEmail = `${profileNode.character_name.toLowerCase()}@aetherclan.local`;
+      const targetEmail = `${profileNode.character_name.toLowerCase()}@gmail.com`;
       const { error: resetError } = await dbClient.auth.resetPasswordForEmail(targetEmail, {
         redirectTo: `${window.location.origin}/index.html`,
       });
