@@ -179,17 +179,32 @@ function registerLoginHandlers() {
 
 window.addEventListener('DOMContentLoaded', () => {
   startCyberCanvas();
-  
-  // Check if user already has a session (OAuth callback redirect)
-  dbClient.auth.getSession().then(({ data: { session } }) => {
-    if (session) {
-      console.log('[Auth] Session detected, redirecting to dashboard');
-      window.location.href = 'dashboard.html';
-    } else {
-      registerLoginHandlers();
+
+  const handleAuthSession = async () => {
+    try {
+      if (dbClient.auth.getSessionFromUrl) {
+        await dbClient.auth.getSessionFromUrl().catch(() => null);
+      }
+
+      const { data: { session } } = await dbClient.auth.getSession();
+      if (session) {
+        console.log('[Auth] Session detected, redirecting to dashboard');
+        window.location.href = 'dashboard.html';
+        return;
+      }
+    } catch (err) {
+      console.error('[Auth] Session check error:', err);
     }
-  }).catch(err => {
-    console.error('[Auth] Session check error:', err);
+
     registerLoginHandlers();
+  };
+
+  handleAuthSession();
+
+  dbClient.auth.onAuthStateChange((event, session) => {
+    if (session) {
+      console.log('[Auth] Auth state changed, redirecting to dashboard', event);
+      window.location.href = 'dashboard.html';
+    }
   });
 });
