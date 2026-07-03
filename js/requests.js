@@ -1,5 +1,5 @@
 const SUPABASE_URL = 'https://mispbaxtkcglpdsjttja.supabase.co';
-const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pc3pwYmF4dGtjZ2xwZHNqdGphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMzczOTEsImV4cCI6MjA5ODYxMzM5MX0.9YDKOHV1upxigsZSUXkYr_VNSXAc7CXlcCRu9BbIReA';
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 async function loadRequestQueue() {
@@ -7,9 +7,9 @@ async function loadRequestQueue() {
   container.innerHTML = '';
 
   const { data, error } = await supabase
-    .from('requests')
-    .select('*')
-    .order('quantity', { ascending: true })
+    .from('assistance_requests')
+    .select('*, profiles(character_name)')
+    .eq('status', 'PENDING')
     .order('created_at', { ascending: true });
 
   if (error || !data) {
@@ -18,9 +18,12 @@ async function loadRequestQueue() {
   }
 
   container.innerHTML = data.map((r) => `
-    <div class="p-4 border border-slate-700 flex justify-between rounded-lg bg-slate-950/80">
-      <span>${r.item_name} <span class="text-slate-500">(Qty: ${r.quantity})</span></span>
-      <span class="text-cyan-300 font-bold">${r.character_name}</span>
+    <div class="p-4 border border-emerald-700 flex justify-between rounded-lg bg-slate-950/80">
+      <div>
+        <div class="font-bold text-slate-200">${r.profiles?.character_name || 'UNKNOWN'}</div>
+        <div class="text-xs text-slate-400 mt-1">${r.request_details}</div>
+      </div>
+      <span class="text-emerald-300 font-bold text-xs">${r.status}</span>
     </div>
   `).join('');
 }
