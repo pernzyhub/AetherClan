@@ -1,5 +1,7 @@
 // Supabase client initialized from config.js
 const dbClient = getSupabase();
+const OAUTH_REDIRECT_BASE = window.OAUTH_REDIRECT_BASE || 'https://miszpbaxtkcglpdsjtja.supabase.co';
+console.log('[OAuth] redirect base set to', OAUTH_REDIRECT_BASE);
 
 function resizeCanvas(canvas) {
   canvas.width = window.innerWidth;
@@ -68,7 +70,7 @@ function registerLoginHandlers() {
       const { data, error } = await dbClient.auth.signInWithOAuth({
         provider: 'discord',
         options: {
-          redirectTo: window.location.origin + '/index.html'
+          redirectTo: OAUTH_REDIRECT_BASE + '/index.html'
         }
       });
       if (error) throw error;
@@ -151,7 +153,7 @@ function registerLoginHandlers() {
 
       const targetEmail = `${profileNode.character_name.toLowerCase()}@gmail.com`;
       const { error: resetError } = await dbClient.auth.resetPasswordForEmail(targetEmail, {
-        redirectTo: `${window.location.origin}/index.html`,
+        redirectTo: `${OAUTH_REDIRECT_BASE}/index.html`,
       });
 
       if (resetError) {
