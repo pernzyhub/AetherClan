@@ -35,7 +35,7 @@
         </div>
 
         <div id="error-banner" class="hidden mb-4 p-3 bg-red-950/40 border border-red-500/40 rounded text-red-400 text-xs flex items-start gap-2">
-            <span class="font-bold">[ERROR]</span> <span id="error-message">Access denied. Invalid signature.</span>
+            <span class="font-bold">[ERROR]</span> <span id="error-message">Access denied.</span>
         </div>
 
         <form id="login-form" class="space-y-4">
@@ -64,9 +64,10 @@
         const SUPABASE_URL = "https://mispbaxtkcglpdsjttja.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pc3pwYmF4dGtjZ2xwZHNqdGphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMzczOTEsImV4cCI6MjA5ODYxMzM5MX0.9YDKOHV1upxigsZSUXkYr_VNSXAc7CXlcCRu9BbIReA";
 
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // FIX: Using window.supabase and unique variable 'dbClient'
+        const dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // --- MATRIX BACKGROUND LOGIC ---
+        // --- MATRIX BACKGROUND ---
         const canvas = document.getElementById('matrix-bg');
         const ctx = canvas.getContext('2d');
         function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
@@ -91,7 +92,7 @@
         }
         setInterval(drawMatrix, 30);
 
-        // --- LOGIN ENGINE PROCESSSOR ---
+        // --- LOGIN DISPATCH ---
         const loginForm = document.getElementById('login-form');
         const submitBtn = document.getElementById('submit-btn');
         const errorBanner = document.getElementById('error-banner');
@@ -99,45 +100,31 @@
 
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
             submitBtn.disabled = true;
-            submitBtn.innerText = "CONNECTING_TO_MATRIX...";
+            submitBtn.innerText = "CONNECTING...";
             errorBanner.classList.add('hidden');
 
-            // 1. Get whatever name they typed and completely clean up spaces
             let inputName = document.getElementById('character-name').value.trim();
 
             try {
-                // 2. Scan your 'profiles' database table using case-insensitive validation
-                const { data: profileNode, error: profileError } = await supabase
+                const { data: profileNode, error: profileError } = await dbClient
                     .from('profiles')
                     .select('*')
                     .ilike('character_name', inputName)
                     .maybeSingle();
 
-                if (profileError || !profileNode) {
-                    throw new Error("Character node not found on active roster.");
-                }
+                if (profileError || !profileNode) throw new Error("Character node not found.");
+                if (profileNode.account_status === 'DISCONNECTED') throw new Error("Node deactivated.");
 
-                if (profileNode.account_status === 'DISCONNECTED') {
-                    throw new Error("This character node has been deactivated by management.");
-                }
-
-                // 3. AUTO-STITCH LOGIC: Take the clean name from database, force lowercase, and attach the backend domain string
                 const targetEmail = `${profileNode.character_name.toLowerCase()}@aetherclan.local`;
                 const passkey = document.getElementById('passkey').value;
 
-                // 4. Fire login using the auto-completed hidden email string
-                const { error: authError } = await supabase.auth.signInWithPassword({
+                const { error: authError } = await dbClient.auth.signInWithPassword({
                     email: targetEmail,
                     password: passkey
                 });
 
-                if (authError) {
-                    throw new Error("Invalid decryption key validation sequence failed.");
-                }
-
-                // Go to dashboard cleanly
+                if (authError) throw new Error("Authentication failed.");
                 window.location.href = "dashboard.html";
 
             } catch (err) {
