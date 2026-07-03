@@ -89,95 +89,136 @@
     window.addEventListener('DOMContentLoaded', () => {
       initMatrix();
 
-      // Discord OAuth Login
-      const discordLoginBtn = document.getElementById('discord-login-btn');
-      discordLoginBtn.addEventListener('click', async () => {
-        discordLoginBtn.disabled = true;
-        discordLoginBtn.textContent = 'INITIALIZING DISCORD AUTH...';
-        try {
-          const supabase = getSupabase();
-          const { data, error } = await supabase.auth.signInWithOAuth({
-            provider: 'discord',
-            options: {
-              redirectTo: window.location.origin + '/dashboard.html'
+      // Check for existing session (Discord OAuth callback)
+      const supabase = getSupabase();
+      supabase.auth.getSession().then(async ({ data: { session } }) => {
+        if (session && session.user) {
+          console.log('[Register] Discord session detected, creating profile...');
+          try {
+            // Extract character name from Discord user email or username
+            let characterName = session.user.email?.split('@')[0] || session.user.user_metadata?.preferred_username || 'user_' + session.user.id.slice(0, 8);
+            characterName = characterName.toLowerCase().replace(/[^a-z0-9_-]/g, '');
+
+            // Check if profile already exists
+            const { data: existingProfile } = await supabase
+              .from('profiles')
+              .select('id')
+              .eq('id', session.user.id)
+              .single();
+
+            if (!existingProfile) {
+              // Create profile for Discord user
+              const { error: profileError } = await supabase
+                .from('profiles')
+                .insert({
+                  id: session.user.id,
+                  character_name: characterName || 'discord_user',
+                  account_status: 'ACTIVE',
+                  rolling_7_day_points: 0,
+                  current_month_points: 0,
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString()
+                });
+
+              if (profileError) throw profileError;
+              console.log('[Register] Profile created for Discord user');
             }
-          });
-          if (error) throw error;
-        } catch (error) {
-          console.error('[Discord Login] Error:', error);
-          document.getElementById('message').textContent = error.message || 'Discord auth failed.';
-          document.getElementById('message').className = 'message error';
-          discordLoginBtn.disabled = false;
-          discordLoginBtn.textContent = '🎮 LOGIN WITH DISCORD';
-        }
-      });
 
-      // Email Registration Form
-      const form = document.getElementById('register-form');
-      const usernameInput = document.getElementById('username');
-      const passwordInput = document.getElementById('password');
-      const confirmInput = document.getElementById('password-confirm');
-      const message = document.getElementById('message');
-      const submitBtn = document.getElementById('submit-btn');
-
-      function setMessage(text, status) {
-        message.textContent = text;
-        message.className = `message ${status || ''}`.trim();
-      }
-
-      form.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        setMessage('', '');
-        const username = usernameInput.value.trim().toLowerCase();
-        const password = passwordInput.value;
-        const confirm = confirmInput.value;
-
-        if (username.length < 3 || !/^[a-z0-9_-]+$/.test(username)) {
-          return setMessage('Username must be 3+ chars and only letters/numbers/_/-.', 'error');
-        }
-        if (password.length < 8) {
-          return setMessage('Passkey must be at least 8 characters.', 'error');
-        }
-        if (password !== confirm) {
-          return setMessage('Passkeys do not match.', 'error');
+            // Redirect to dashboard
+            window.location.href = 'dashboard.html';
+          } catch (error) {
+            console.error('[Register] Discord profile creation error:', error);
+          }
+          return;
         }
 
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'DEPLOYING...';
+        // Regular registration form handlers
+        const form = document.getElementById('register-form');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const confirmInput = document.getElementById('password-confirm');
+        const message = document.getElementById('message');
+        const submitBtn = document.getElementById('submit-btn');
+        const discordLoginBtn = document.getElementById('discord-login-btn');
 
-        try {
-          const supabase = getSupabase();
-          const userEmail = `${username}@gmail.com`;
-
-          const { data: authData, error: authError } = await supabase.auth.signUp({ email: userEmail, password });
-          if (authError) throw authError;
-          if (!authData.user) throw new Error('Auth user creation failed.');
-
-          const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .insert({
-              id: authData.user.id,
-              character_name: username,
-              account_status: 'ACTIVE',
-              rolling_7_day_points: 0,
-              current_month_points: 0,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            })
-            .select('id, character_name, account_status')
-            .single();
-
-          if (profileError) throw profileError;
-
-          setMessage('Node deployed successfully. Redirecting to login...', 'success');
-          setTimeout(() => window.location.href = 'index.html', 1800);
-        } catch (error) {
-          console.error('[Register] Exception:', error);
-          setMessage(error.message || 'Deployment failed.', 'error');
-        } finally {
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'DEPLOY NODE';
+        function setMessage(text, status) {
+          message.textContent = text;
+          message.className = `message ${status || ''}`.trim();
         }
+
+        // Discord OAuth Login
+        discordLoginBtn.addEventListener('click', async () => {
+          discordLoginBtn.disabled = true;
+          discordLoginBtn.textContent = 'INITIALIZING DISCORD AUTH...';
+          try {
+            const { data, error } = await supabase.auth.signInWithOAuth({
+              provider: 'discord'
+            });
+            if (error) throw error;
+          } catch (error) {
+            console.error('[Discord Login] Error:', error);
+            document.getElementById('message').textContent = error.message || 'Discord auth failed.';
+            document.getElementById('message').className = 'message error';
+            discordLoginBtn.disabled = false;
+            discordLoginBtn.textContent = '🎮 LOGIN WITH DISCORD';
+          }
+        });
+
+        form.addEventListener('submit', async (event) => {
+          event.preventDefault();
+          setMessage('', '');
+          const username = usernameInput.value.trim().toLowerCase();
+          const password = passwordInput.value;
+          const confirm = confirmInput.value;
+
+          if (username.length < 3 || !/^[a-z0-9_-]+$/.test(username)) {
+            return setMessage('Username must be 3+ chars and only letters/numbers/_/-.', 'error');
+          }
+          if (password.length < 8) {
+            return setMessage('Passkey must be at least 8 characters.', 'error');
+          }
+          if (password !== confirm) {
+            return setMessage('Passkeys do not match.', 'error');
+          }
+
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'DEPLOYING...';
+
+          try {
+            const userEmail = `${username}@gmail.com`;
+
+            const { data: authData, error: authError } = await supabase.auth.signUp({ email: userEmail, password });
+            if (authError) throw authError;
+            if (!authData.user) throw new Error('Auth user creation failed.');
+
+            const { data: profile, error: profileError } = await supabase
+              .from('profiles')
+              .insert({
+                id: authData.user.id,
+                character_name: username,
+                account_status: 'ACTIVE',
+                rolling_7_day_points: 0,
+                current_month_points: 0,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+              })
+              .select('id, character_name, account_status')
+              .single();
+
+            if (profileError) throw profileError;
+
+            setMessage('Node deployed successfully. Redirecting to login...', 'success');
+            setTimeout(() => window.location.href = 'index.html', 1800);
+          } catch (error) {
+            console.error('[Register] Exception:', error);
+            setMessage(error.message || 'Deployment failed.', 'error');
+          } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'DEPLOY NODE';
+          }
+        });
+      }).catch(err => {
+        console.error('[Register] Session check error:', err);
       });
     });
   </script>
