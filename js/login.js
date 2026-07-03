@@ -45,9 +45,18 @@ function startCyberCanvas() {
   setInterval(drawFrame, 35);
 }
 
+function toggleResetForm() {
+  const loginForm = document.getElementById('login-form');
+  const resetForm = document.getElementById('reset-form');
+  loginForm.classList.toggle('hidden');
+  resetForm.classList.toggle('hidden');
+}
+
 function registerLoginHandlers() {
   const loginForm = document.getElementById('login-form');
+  const resetForm = document.getElementById('reset-form');
   const submitBtn = document.getElementById('submit-btn');
+  const resetSubmitBtn = document.getElementById('reset-submit-btn');
   const errorBanner = document.getElementById('error-banner');
   const errorMessage = document.getElementById('error-message');
 
@@ -97,6 +106,54 @@ function registerLoginHandlers() {
       errorBanner.classList.remove('hidden');
       submitBtn.disabled = false;
       submitBtn.innerText = 'INITIALIZE_AUTH';
+    }
+  });
+
+  resetForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    resetSubmitBtn.disabled = true;
+    resetSubmitBtn.innerText = 'PROCESSING...';
+
+    let resetCharName = document.getElementById('reset-character-name').value.trim().toLowerCase().split('@')[0];
+
+    try {
+      const { data: profileNode, error: profileError } = await dbClient
+        .from('profiles')
+        .select('*')
+        .ilike('character_name', resetCharName)
+        .maybeSingle();
+
+      if (profileError || !profileNode) {
+        throw new Error('Character node not found.');
+      }
+
+      const targetEmail = `${profileNode.character_name.toLowerCase()}@aetherclan.local`;
+      const { error: resetError } = await dbClient.auth.resetPasswordForEmail(targetEmail, {
+        redirectTo: `${window.location.origin}/index.html`,
+      });
+
+      if (resetError) {
+        throw new Error('Reset request failed. Please try again.');
+      }
+
+      // Success message
+      const successMessage = document.createElement('div');
+      successMessage.className = 'p-3 bg-emerald-950/40 border border-emerald-500/40 rounded text-emerald-400 text-xs mb-4 flex items-start gap-2';
+      successMessage.innerHTML = '<span class="font-bold">[SUCCESS]</span> <span>Reset link sent to ' + targetEmail + '. Check your email.</span>';
+      resetForm.parentNode.insertBefore(successMessage, resetForm);
+
+      // Clear input
+      document.getElementById('reset-character-name').value = '';
+      resetSubmitBtn.disabled = false;
+      resetSubmitBtn.innerText = 'SEND_RESET_LINK';
+
+      // Auto-hide success message after 5 seconds
+      setTimeout(() => successMessage.remove(), 5000);
+    } catch (error) {
+      errorMessage.innerText = error.message;
+      errorBanner.classList.remove('hidden');
+      resetSubmitBtn.disabled = false;
+      resetSubmitBtn.innerText = 'SEND_RESET_LINK';
     }
   });
 }
