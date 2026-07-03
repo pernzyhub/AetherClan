@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AETHERCLAN // ASSIST.sys</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>body { font-family: 'Fira Code', monospace; background-color: #020617; color: #e2e8f0; }</style>
+</head>
+<body class="p-8">
+    <div class="max-w-xl mx-auto border border-emerald-500/20 bg-slate-900/50 p-6 rounded">
+        <h1 class="text-emerald-400 text-xl font-bold mb-6 tracking-widest">ASSIST.sys // ACTIVE</h1>
+        
+        <div class="grid gap-4">
+            <button onclick="pingGuild()" class="w-full p-4 border border-emerald-500/30 hover:bg-emerald-950/30 text-left transition">
+                <span class="text-emerald-500">[!]</span> ALERT_GUILD_SUPPORT
+            </button>
+            
+            <a href="requests.html" class="w-full p-4 border border-slate-700 hover:border-emerald-500 text-left transition">
+                VIEW_PENDING_REQUESTS
+            </a>
+            
+            <a href="dashboard.html" class="w-full p-4 mt-8 bg-slate-800 text-center text-xs text-slate-500 hover:text-white transition">
+                RETURN_TO_CORE
+            </a>
+        </div>
+    </div>
+
+    <script>
+        async function pingGuild() {
+            // Replace with your actual Discord Webhook URL if you have one
+            const webhookUrl = "YOUR_DISCORD_WEBHOOK_URL_HERE";
+            alert("Signal sent to guild network.");
+            /* await fetch(webhookUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: "Guild support requested via ASSIST.sys" })
+            });
+            */
+        }
+    </script>
+</body>
+</html>
