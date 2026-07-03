@@ -19,7 +19,7 @@
             </div>
         </div>
         <nav class="flex gap-2">
-            <a href="dashboard.html" class="px-3 py-1.5 bg-emerald-950/40 hover:bg-emerald-900/30 text-emerald-400 border border-emerald-500/40 text-xs font-bold uppercase rounded transition-all">← RETURN_TO_DASHBOARD</a>
+            <button onclick="goToDashboard()" class="px-3 py-1.5 bg-emerald-950/40 hover:bg-emerald-900/30 text-emerald-400 border border-emerald-500/40 text-xs font-bold uppercase rounded transition-all cursor-pointer">← RETURN_TO_DASHBOARD</button>
         </nav>
     </header>
 
@@ -27,6 +27,26 @@
         <h2 class="text-amber-400 mb-6">ARCHIVAL_DATA // EVENT_RANKINGS</h2>
         <div id="rankings" class="space-y-2"></div>
     </main>
+    
+    <script>
+        const SUPABASE_URL = 'https://mispbaxtkcglpdsjttja.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pc3pwYmF4dGtjZ2xwZHNqdGphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMzczOTEsImV4cCI6MjA5ODYxMzM5MX0.9YDKOHV1upxigsZSUXkYr_VNSXAc7CXlcCRu9BbIReA';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        function goToDashboard() {
+            window.location.href = 'dashboard.html';
+        }
+        
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session && localStorage.getItem('bypass_superadmin') !== 'true') {
+                window.location.href = 'index.html';
+                return;
+            }
+        }
+        
+        checkAuth();
+    </script>
     <script src="js/rankings.js"></script>
 </body>
 </html>
