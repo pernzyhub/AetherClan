@@ -77,14 +77,14 @@ function switchTab(targetTabId) {
   document.getElementById(`tab-${targetTabId}`).classList.remove('hidden');
 
   document.querySelectorAll('[data-tab-target]').forEach((button) => {
-    button.classList.remove('bg-cyan-950/40', 'text-cyan-400', 'border-cyan-500/40');
+    button.classList.remove('bg-emerald-950/40', 'text-emerald-400', 'border-emerald-500/40');
     button.classList.add('bg-slate-900', 'text-slate-400', 'border-slate-800');
   });
 
   const activeButton = document.querySelector(`[data-tab-target='${targetTabId}']`);
   if (activeButton) {
     activeButton.classList.remove('bg-slate-900', 'text-slate-400', 'border-slate-800');
-    activeButton.classList.add('bg-cyan-950/40', 'text-cyan-400', 'border-cyan-500/40');
+    activeButton.classList.add('bg-emerald-950/40', 'text-emerald-400', 'border-emerald-500/40');
   }
 }
 
