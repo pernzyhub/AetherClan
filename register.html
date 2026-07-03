@@ -158,7 +158,10 @@
           discordLoginBtn.textContent = 'INITIALIZING DISCORD AUTH...';
           try {
             const { data, error } = await supabase.auth.signInWithOAuth({
-              provider: 'discord'
+              provider: 'discord',
+              options: {
+                redirectTo: window.location.origin + '/register.html'
+              }
             });
             if (error) throw error;
           } catch (error) {
