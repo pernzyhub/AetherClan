@@ -90,7 +90,13 @@ function switchTab(targetTabId) {
 
 function handleLogout() {
   localStorage.removeItem('bypass_superadmin');
+  localStorage.removeItem('auth_token');
+  
   supabase.auth.signOut().then(() => {
+    window.location.href = 'index.html';
+  }).catch((error) => {
+    console.error('Logout error:', error);
+    // Force redirect even if signOut fails
     window.location.href = 'index.html';
   });
 }
