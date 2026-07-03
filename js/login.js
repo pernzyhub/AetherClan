@@ -57,10 +57,11 @@ function registerLoginHandlers() {
     submitBtn.innerText = 'CONNECTING...';
     errorBanner.classList.add('hidden');
 
-    const inputName = document.getElementById('character-name').value.trim();
+    // This will strip the @aetherclan.local part if someone types it in
+    let inputName = document.getElementById('character-name').value.trim().toLowerCase().split('@')[0];
     const passkey = document.getElementById('passkey').value;
 
-    if (inputName.toLowerCase() === 'superadmin' && passkey === 'admin') {
+    if (inputName === 'superadmin' && passkey === 'admin') {
       localStorage.setItem('bypass_superadmin', 'true');
       window.location.href = 'dashboard.html';
       return;
