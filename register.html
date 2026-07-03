@@ -34,6 +34,19 @@
       <h1>AetherClan Node Deploy</h1>
       <p>Create a new node and register it with Supabase.</p>
       <div id="message" class="message"></div>
+
+      <!-- Discord OAuth Login -->
+      <div style="margin-bottom: 24px;">
+        <button id="discord-login-btn" type="button" style="width: 100%; padding: 12px; border: none; border-radius: 14px; background: #5865F2; color: white; font-weight: 700; letter-spacing: .12em; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+          🎮 LOGIN WITH DISCORD
+        </button>
+      </div>
+
+      <div style="text-align: center; margin-bottom: 16px; font-size: 11px; color: #70e3ff; text-transform: uppercase; letter-spacing: .15em;">
+        or deploy manually
+      </div>
+
+      <!-- Email Registration Form -->
       <form id="register-form">
         <label for="username">Character Node ID</label>
         <input id="username" name="username" type="text" placeholder="e.g. pernzy" autocomplete="off" required>
@@ -75,6 +88,31 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       initMatrix();
+
+      // Discord OAuth Login
+      const discordLoginBtn = document.getElementById('discord-login-btn');
+      discordLoginBtn.addEventListener('click', async () => {
+        discordLoginBtn.disabled = true;
+        discordLoginBtn.textContent = 'INITIALIZING DISCORD AUTH...';
+        try {
+          const supabase = getSupabase();
+          const { data, error } = await supabase.auth.signInWithOAuth({
+            provider: 'discord',
+            options: {
+              redirectTo: window.location.origin + '/dashboard.html'
+            }
+          });
+          if (error) throw error;
+        } catch (error) {
+          console.error('[Discord Login] Error:', error);
+          document.getElementById('message').textContent = error.message || 'Discord auth failed.';
+          document.getElementById('message').className = 'message error';
+          discordLoginBtn.disabled = false;
+          discordLoginBtn.textContent = '🎮 LOGIN WITH DISCORD';
+        }
+      });
+
+      // Email Registration Form
       const form = document.getElementById('register-form');
       const usernameInput = document.getElementById('username');
       const passwordInput = document.getElementById('password');
